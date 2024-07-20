@@ -18,13 +18,13 @@ router.get("/market-cap-distribution", async (req, res) => {
   try {
     const cachedData = await getCachedData("marketCapDistribution");
 
-    const data = await getMarketCapDistribution();
-
     if (cachedData) {
       return res.json(cachedData);
     }
+    const data = await getMarketCapDistribution();
 
     await cacheData("marketCapDistribution", data, CACHE_EXPIRATION.MARKET_CAP);
+
     res.json(data);
   } catch (error) {
     console.log(error);

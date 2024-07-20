@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status.
-set -e
+# set -e
 
-echo "Building frontend..."
-cd frontend
-npm install
-npm run build
 
-echo "Copying frontend build to backend public directory..."
-cd ../backend
-mkdir -p public
-cp -r ../frontend/dist/* public/
+# chmod +x ./frontend-build.sh
+# chmod +x ./backend-build.sh
 
-echo "Building and running Docker containers..."
-docker-compose up --build
+# ./backend.sh & ./frontend-build.sh && fg
+
+
+echo "Starting frontend and backend in parallel..."
+
+sh -ec 'cd backend && npm install && docker-compose up --build' &
+sh -ec 'cd frontend && npm install && npm run dev' &
+
+# Wait for all background jobs to complete
+wait
