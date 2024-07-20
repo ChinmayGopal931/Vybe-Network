@@ -1,0 +1,19 @@
+{
+  "name": "vybe-full-stack-code-challenge",
+  "version": "1.0.0",
+  "description": "## Challenge Description",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vybenetwork/full-stack-code-challenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vybenetwork/full-stack-code-challenge/issues"
+  },
+  "homepage": "https://github.com/vybenetwork/full-stack-code-challenge#readme"
+}
