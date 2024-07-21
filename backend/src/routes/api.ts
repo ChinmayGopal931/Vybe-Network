@@ -6,6 +6,19 @@ import {
 } from "../services/solanaService";
 import { cacheData, getCachedData } from "../services/cacheService";
 
+const wallets = [
+  "61aq585V8cR2sZBeawJFt2NPqmN7zDi1sws4KLs5xHXV",
+  "EXJHiMkj6NRFDfhWBMKccHNwdSpCT7tdvQeRf87yHm6T",
+  "3EpUYHv8NzoD5EzqB74JTYUtva2c1wj3Wq3oR5gaLfGt",
+  "7mhcgF1DVsj5iv4CxZDgp51H6MBBwqamsH1KnqXhSRc5",
+  "zvYPtfpDXwEE46C3NeZrKV5SHA416BiK2YabQTceQ8X",
+  "CbU4oSFCk8SVgW23NLvb5BwctvWcZZHfxRD6HudP8gAo",
+  "4Rm2L8C6K4BhkrtjvnrYC3PDScjGwZf4fk6AMYdK4GrZ",
+  "9cNE6KBg2Xmf34FPMMvzDF8yUHMrgLRzBV3vD7b1JnUS",
+  "JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw",
+  "HLksszpjGgiRbyumXyQe5VpmJLuJEnf6YcRzghyDc8Fo",
+];
+
 const router = express.Router();
 
 const CACHE_EXPIRATION = {
@@ -27,7 +40,6 @@ router.get("/market-cap-distribution", async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Failed to fetch market cap distribution" });
   }
 });
@@ -42,8 +54,15 @@ router.get("/transactions-per-second", async (req, res) => {
     const data = await getTransactionsPerSecond();
     await cacheData("transactionsPerSecond", data, CACHE_EXPIRATION.TPS);
     res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch transactions per second" });
+  } catch (error: any) {
+    console.log(error.message);
+    if (error.message === "Rate limit exceeded. Please try again later.") {
+      res.status(429).json({ error: error.message });
+    } else {
+      res
+        .status(500)
+        .json({ error: "Failed to fetch transactions per second" });
+    }
   }
 });
 
@@ -54,24 +73,6 @@ router.get("/wallet-balances", async (req, res) => {
       return res.json(cachedData);
     }
 
-    const wallets = [
-      "3yE21jmVgd2S6CMLPDoLsD9iQaH1HG6wr3V7Mj34DkS8",
-      "D5dbeCc2vqE2fJv9QjWccA8uqYdYrHg6GPnPNJLRZSwf",
-      "5ZXS8YNRPB8UzAL7ErXN5AwMKfCdug6Jxxb8t7Xtawf7",
-      "8XzESyLrt2pk9wsMAuNztgT1tXnCBoLFhTqgMn7PZitQ",
-      "7MtGeMuJj9oUMj1Vx2F1FgE3dfGfAYDCCHYbk54LHvCd",
-      "2sm3VcV1knop8B7Aiy9EJJ3QHX3ZfNLftQ3rTv5hLG97",
-      "9ryCxE7SgMHj1V2Fd9mZ9ty1pEFJx4zxNpvHqStF6xFz",
-      "4t6zWh1BcSPDeFzFEW9DCzHZndizEsX9tP88e8jpKZjR",
-      "EHvFeUsLJvBqeZ4ErT3d5nEpaSgRaMVHRhjGqbn9whpM",
-      "FNX6uLPrT9wAFDXCeKzPiQeb8fiTE2cB5nADZif3Huj7",
-      "GSjZTYUBbtHyP6rUPDofWgJmoi8iFzQKGdENremcFSMX",
-      "DqN5Txk1XRAjtpzTfJm3VmET2PAj7FPp69wdzREdLiwD",
-      "GvEBmTp8HbF7pZyF7nzDRr4ST6Y9kFjszJEMZPPbdojP",
-      "3KFK6z2WkGf6Fi7DrTxqAXk1ERbFekjj3L7AbgNZPdYn",
-      "E6XfFjqzNnozqX1vXs94nZ9eXbP8pViEFJcfsDxMfdM",
-      "GSjZTYUBbtHyP6rUPDofWgJmoi8iFzQKGdENremcFSMX",
-    ];
     const data = await getWalletBalances(wallets);
     await cacheData("walletBalances", data, CACHE_EXPIRATION.WALLET_BALANCE);
     res.json(data);
